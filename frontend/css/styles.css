@@ -1,0 +1,82 @@
+:root{
+  /* Brand - West Clean */
+  --brand-green: #00b894;   /* principal */
+  --brand-green-600: #009f78;
+  --brand-dark: #0b0b0b;    /* negro profundo */
+  --bg: #0f1720;            /* fondo general (oscuro) */
+  --panel-bg: #0f1726;      /* paneles */
+  --muted: #9aa4aa;
+  --surface: #0b0b0b;
+  --radius-md: 12px;
+  --shadow-lg: 0 8px 30px rgba(2,6,23,0.65);
+  --glass: rgba(255,255,255,0.03);
+  --accent-contrast: #ffffff;
+
+  font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-size: 16px;
+}
+
+/* Minimal reset & base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg), #061018);color:var(--accent-contrast);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+img{max-width:100%;height:auto}
+
+/* page container */
+.wc-container{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.25rem;}
+
+/* split layout */
+.wc-split{
+  width:100%;
+  max-width:1100px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:1.25rem;
+}
+
+/* panel defaults */
+.wc-panel{
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* utility text */
+.muted{color:var(--muted)}
+.small{font-size:.9rem;opacity:.95}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.6rem .9rem;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--accent-contrast);cursor:pointer;font-weight:600}
+.btn.full{width:100%}
+.btn.primary{background: linear-gradient(90deg,var(--brand-green),var(--brand-green-600));color:var(--accent-contrast);box-shadow: 0 6px 20px rgba(0,185,140,0.15)}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+/* form basics */
+.form-row{margin-bottom:0.9rem;display:flex;flex-direction:column;gap:.35rem}
+.form-label{font-weight:600;font-size:.95rem}
+.form-control{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:.7rem .8rem;border-radius:10px;color:var(--accent-contrast);outline:none;font-size:1rem}
+.form-control::placeholder{color:rgba(255,255,255,0.35)}
+.form-control:focus{box-shadow:0 6px 20px rgba(0,0,0,0.3);border-color:rgba(0,185,140,0.25)}
+
+/* small helpers */
+.link{color:var(--brand-green);text-decoration:none}
+.checkbox{display:flex;align-items:center;gap:.6rem}
+.form-error{color:#ffb4b4;font-size:.88rem;min-height:1.15rem}
+
+/* divider */
+.wc-divider{display:flex;align-items:center;justify-content:center;margin:.8rem 0}
+.wc-divider span{background:transparent;border-radius:999px;padding:.35rem .9rem;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+/* accessible focus */
+:focus{outline: 3px solid rgba(0,185,140,0.18);outline-offset:2px}
+
+/* reduce-motion */
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important}
+}
+
+/* Responsive > desktop: layout split */
+@media (min-width: 920px){
+  .wc-split{grid-template-columns: 460px 1fr; align-items:center}
+}

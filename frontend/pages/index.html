@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>West Clean — Foro de reportes</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+  <!-- Global tokens (must exist) -->
+  <link rel="stylesheet" href="../css/styles.css">
+  <!-- Page specific -->
+  <link rel="stylesheet" href="../css/index.css">
+
+  <meta name="theme-color" content="#0b0b0b">
+</head>
+<body class="wc-bg">
+
+  <!-- NAVBAR -->
+  <header class="wc-topbar" role="banner">
+    <div class="container topbar-inner">
+      <div class="brand-row">
+        <a href="index.html" class="brand-link" aria-label="West Clean home">
+          <!-- small square logo -->
+          <svg class="brand-logo" width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+            <rect width="24" height="24" rx="5" fill="var(--brand-dark)"></rect>
+            <path d="M6 12c1.6-2 3-4 6-4s4.4 2 6 4c-1.6 2-3 4-6 4s-4.4-2-6-4z" fill="var(--brand-green)"/>
+          </svg>
+          <span class="brand-text">West Clean</span>
+        </a>
+      </div>
+
+      <div class="topbar-actions">
+        <button id="createReportBtn" class="btn primary small" aria-haspopup="dialog">Crear reporte</button>
+
+        <div class="menu-inline" id="userMenuWrap">
+          <button id="profileBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Abrir perfil">
+            <!-- user icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 0114 0H5z"/></svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn" aria-haspopup="true" aria-expanded="false" aria-label="Abrir configuración">
+            <!-- gear icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 1112 8.5a3.5 3.5 0 010 7zM19.4 13a7.9 7.9 0 000-2l2.1-1.6a.5.5 0 00.1-.7l-2-3.4a.5.5 0 00-.6-.2L16.9 5a7.7 7.7 0 00-1.7-1l-.3-2.5a.5.5 0 00-.5-.4h-4a.5.5 0 00-.5.4l-.3 2.5a7.7 7.7 0 00-1.7 1L4.9 3.6a.5.5 0 00-.6.2L2.3 7.2a.5.5 0 00.1.7L4.5 9.5a7.9 7.9 0 000 2L2.4 13.1a.5.5 0 00-.1.7l2 3.4c.1.2.4.3.6.2l2.6-1.1c.5.4 1 0 1.7 1l.3 2.5a.5.5 0 00.5.4h4c.3 0 .5-.2.5-.4l.3-2.5c.6-1 1.2-.6 1.7-1l2.6 1.1c.2.1.5 0 .6-.2l2-3.4a.5.5 0 00-.1-.7L19.4 13z"/></svg>
+          </button>
+
+          <!-- small popup menu (profile) -->
+          <div id="userPopup" class="popup-menu" role="menu" aria-hidden="true">
+            <a href="profile.html" class="popup-item" role="menuitem">Ver perfil</a>
+            <a href="settings.html" class="popup-item" role="menuitem">Ajustes</a>
+            <button id="logoutBtn" class="popup-item" role="menuitem">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FILTER BAR -->
+  <div class="container filter-bar" role="region" aria-label="Filtros de reportes">
+    <div class="filter-row">
+      <div class="search-wrap">
+        <label for="searchInput" class="visually-hidden">Buscar reportes</label>
+        <input id="searchInput" type="search" placeholder="Buscar reportes, direcciones, etiquetas..." aria-label="Buscar reportes" />
+      </div>
+
+      <div class="filters">
+        <select id="filterType" aria-label="Filtrar por tipo">
+          <option value="all">Todos</option>
+          <option value="sanitation">Saneamiento</option>
+          <option value="garbage">Desechos</option>
+          <option value="maintenance">Mantenimiento</option>
+        </select>
+
+        <select id="sortBy" aria-label="Ordenar por">
+          <option value="new">Más recientes</option>
+          <option value="top">Más votados</option>
+          <option value="commented">Más comentados</option>
+        </select>
+
+        <button id="applyFilters" class="btn ghost small">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT: lists + sidebar -->
+  <main class="container main-grid" role="main">
+    <!-- POSTS COLUMN -->
+    <section class="posts-col" aria-live="polite" aria-label="Listado de reportes">
+      <!-- example post (repeat) -->
+      <article class="post-card" data-id="101" tabindex="0" aria-label="Reporte: Basura en calle 7">
+        <div class="vote-col" aria-hidden="false">
+          <button class="vote up" aria-label="Votar positivo">▲</button>
+          <div class="score" aria-hidden="true">128</div>
+          <button class="vote down" aria-label="Votar negativo">▼</button>
+        </div>
+
+        <div class="post-main">
+          <header class="post-header">
+            <a href="#" class="post-tag">#garbage</a>
+            <h3 class="post-title"><a href="post.html">Basura acumulada en la calle 7, sector A</a></h3>
+            <div class="post-meta">
+              <span class="muted">por <strong>juanp</strong></span>
+              <span class="muted">· hace 2h</span>
+              <span class="muted">· 12 comentarios</span>
+            </div>
+          </header>
+
+          <div class="post-body">
+            <p>Se observa acumulación de bolsas y escombros en la esquina frente al colegio. El flujo peatonal está afectado.</p>
+            <div class="post-media">
+              <img src="../assets/images/sample-report-1.jpg" alt="Acumulación de basura en esquina" />
+            </div>
+          </div>
+
+          <footer class="post-actions">
+            <button class="btn ghost tiny" aria-label="Comentar">💬 12</button>
+            <button class="btn ghost tiny" aria-label="Compartir">🔗 Compartir</button>
+            <button class="btn ghost tiny" aria-label="Guardar">☆ Guardar</button>
+          </footer>
+        </div>
+      </article>
+
+      <!-- More sample posts -->
+      <article class="post-card" data-id="102" tabindex="0" aria-label="Reporte: Alcantarilla obstruida">
+        <div class="vote-col">
+          <button class="vote up" aria-label="Votar positivo">▲</button>
+          <div class="score">64</div>
+          <button class="vote down" aria-label="Votar negativo">▼</button>
+        </div>
+        <div class="post-main">
+          <header class="post-header">
+            <a class="post-tag">#saneamiento</a>
+            <h3 class="post-title"><a href="post.html">Alcantarilla obstruida en avenida principal</a></h3>
+            <div class="post-meta"><span class="muted">por <strong>maria</strong></span> · <span class="muted">hace 1d</span> · <span class="muted">4 comentarios</span></div>
+          </header>
+          <div class="post-body">
+            <p>El agua no drena tras lluvias; es urgente revisar tapa y canal.</p>
+          </div>
+          <footer class="post-actions">
+            <button class="btn ghost tiny">💬 4</button>
+            <button class="btn ghost tiny">🔗</button>
+            <button class="btn ghost tiny">☆</button>
+          </footer>
+        </div>
+      </article>
+
+      <!-- placeholder for "load more" -->
+      <div id="loadMoreWrap" class="load-more">
+        <button id="loadMoreBtn" class="btn ghost">Cargar más</button>
+      </div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Panel lateral">
+      <div class="panel small">
+        <h4>Acciones</h4>
+        <button id="quickCreateBtn" class="btn primary full">Crear reporte</button>
+        <a class="btn ghost full" href="profile.html">Mi perfil</a>
+      </div>
+
+      <div class="panel small">
+        <h4>Etiquetas populares</h4>
+        <div class="tags">
+          <button class="tag">#garbage</button>
+          <button class="tag">#saneamiento</button>
+          <button class="tag">#mantenimiento</button>
+          <button class="tag">#iluminacion</button>
+        </div>
+      </div>
+
+      <div class="panel small">
+        <h4>Top usuarios</h4>
+        <ol class="top-users">
+          <li>juanp — 120 pts</li>
+          <li>maria — 98 pts</li>
+          <li>operaciones — 80 pts</li>
+        </ol>
+      </div>
+    </aside>
+  </main>
+
+  <!-- CREATE REPORT MODAL (hidden by default) -->
+  <div id="createModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modalTitle">Crear nuevo reporte</h3>
+        <button class="icon-btn" id="closeModal" aria-label="Cerrar">✕</button>
+      </header>
+
+      <form id="createForm" class="modal-form" novalidate>
+        <label for="r-title">Título</label>
+        <input id="r-title" name="title" class="form-control" required>
+
+        <label for="r-desc">Descripción</label>
+        <textarea id="r-desc" name="description" class="form-control" rows="4" required></textarea>
+
+        <label for="r-tag">Etiqueta</label>
+        <select id="r-tag" class="form-control">
+          <option value="garbage">#garbage</option>
+          <option value="saneamiento">#saneamiento</option>
+          <option value="mantenimiento">#mantenimiento</option>
+        </select>
+
+        <label for="r-photo">Foto (opcional)</label>
+        <input id="r-photo" name="photo" type="file" accept="image/*" class="form-control">
+        <div id="photoPreview" class="photo-preview" aria-hidden="true"></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="cancelCreate">Cancelar</button>
+          <button type="submit" class="btn primary">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/index.js" defer></script>
+</body>
+</html>
