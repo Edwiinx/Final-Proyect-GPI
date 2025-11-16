@@ -3,103 +3,273 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>West Clean — Iniciar sesión</title>
+  <title>West Clean — Acceso</title>
 
-  <!-- Tipografía (Inter); si prefieres, descarga y sirve localmente -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Global styles (tokens, layout) -->
-  <link rel="stylesheet" href="../css/styles.css">
-  <!-- Login-specific -->
+  <link rel="stylesheet" href="../css/styles.css"> <!-- opcional -->
   <link rel="stylesheet" href="../css/login.css">
 
   <meta name="theme-color" content="#0b0b0b">
 </head>
-<body class="wc-bg">
+<body class="bg-wc-dark" style="background: url('../assets/images/fondo_verde.png') center/cover no-repeat;">
 
-  <main class="wc-container" id="main" role="main">
-    <section class="wc-split">
+  <main class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="row w-100 gx-0 shadow-lg login-card-wrapper">
 
-      <!-- LEFT: hero / marca (se oculta en pantallas pequeñas) -->
-      <aside class="wc-hero" aria-hidden="false">
-        <!-- Inline SVG logo simple — reemplaza por tu logo real si lo tienes -->
-        <div class="wc-hero-inner">
-          <svg class="wc-logo" width="84" height="84" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <rect width="24" height="24" rx="6" fill="#0b0b0b"/>
-            <path d="M6 12c1.6-2 3-4 6-4s4.4 2 6 4c-1.6 2-3 4-6 4s-4.4-2-6-4z" fill="#00b894"/>
-            <circle cx="12" cy="9.5" r="1.5" fill="#ffffff"/>
-          </svg>
-
-          <h1 class="wc-hero-title">West Clean</h1>
-          <p class="wc-hero-sub">Panel de control | Gestión Operativa</p>
-
-          <div class="wc-hero-dek">
-            <p>Rápido. Seguro. Limpio.</p>
-            <p class="muted">Accede para gestionar reportes, procesos y estados.</p>
+      <!-- HERO (izquierda) -->
+      <aside class="col-12 col-lg-6 d-none d-lg-flex align-items-center justify-content-between wc-hero px-4">
+        <div class="text-white wc-hero-inner">
+          <div class="mb-4 d-flex align-items-center gap-3">
+            <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true">
+              <rect width="24" height="24" rx="6" fill="#0b0b0b"/>
+              <path d="M6 12c1.6-2 3-4 6-4s4.4 2 6 4c-1.6 2-3 4-6 4s-4.4-2-6-4z" fill="#00b894"/>
+            </svg>
+            <h2 class="h4 mb-0 fw-bold">West Clean</h2>
           </div>
+
+          <h1 class="h3 fw-bold mb-2">Bienvenido a West Clean</h1>
+          <p class="text-muted mb-4">Gestión de reportes y operaciones — rápido, seguro y eficiente.</p>
+
+          <ul class="list-unstyled text-muted small mb-0">
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Interfaz enfocada en la acción</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Control de reportes en tiempo real</li>
+            <li><i class="bi bi-check-circle-fill text-success me-2"></i>Acceso seguro y auditado</li>
+          </ul>
         </div>
       </aside>
 
-      <!-- RIGHT: formulario -->
-      <section class="wc-panel" aria-labelledby="login-heading">
-        <div class="wc-panel-inner">
-          <header class="wc-panel-header">
-            <h2 id="login-heading">Inicia sesión</h2>
-            <p class="muted">Ingresa tus credenciales de West Clean.</p>
-          </header>
+      <!-- PANEL (derecha): Auth area -->
+      <section id="authPanel" class="col-12 col-lg-6 bg-wc-panel p-4 p-lg-5" aria-live="polite">
 
-          <form id="login-form" class="wc-form" novalidate autocomplete="on" aria-describedby="login-help">
-            <div class="form-row">
-              <label for="email" class="form-label">Correo electrónico</label>
-              <input id="email" name="email" type="email" inputmode="email" autocomplete="email" class="form-control" required aria-required="true" placeholder="tu@ejemplo.com">
-              <div class="form-error" id="error-email" aria-live="polite"></div>
+        <!-- Hidden bootstrap tab triggers (used programmatically) -->
+        <div style="display:none" aria-hidden="true">
+          <button id="signin-tab" data-bs-toggle="pill" data-bs-target="#signin" type="button"></button>
+          <button id="register-tab" data-bs-toggle="pill" data-bs-target="#register" type="button"></button>
+        </div>
+
+        <!-- PLACEHOLDER (visible hasta selección) -->
+        <div id="authPlaceholder" class="auth-placeholder text-center py-5">
+          <!-- CHOOSER INLINE (visible en lg+) -->
+          <div class="chooser-card d-none d-lg-block mx-auto" id="chooserInline" role="region" aria-label="Seleccionar método de acceso">
+            <h6 class="mb-3">¿Cómo deseas acceder?</h6>
+            <div class="d-grid gap-2">
+              <button id="inlineSignIn" class="btn btn-wc-primary btn-sm d-flex align-items-center gap-2">
+                <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión
+              </button>
+              <button id="inlineRegister" class="btn btn-outline-wc btn-sm d-flex align-items-center gap-2">
+                <i class="bi bi-person-plus"></i> Crear cuenta
+              </button>
+              <button id="inlineGuest" class="btn btn-ghost-wc btn-sm d-flex align-items-center gap-2">
+                <i class="bi bi-door-open"></i> Invitado
+              </button>
             </div>
-
-            <div class="form-row">
-              <label for="password" class="form-label">Contraseña</label>
-              <div class="password-wrap">
-                <input id="password" name="password" type="password" autocomplete="current-password" class="form-control" required aria-required="true" placeholder="••••••••">
-                <button type="button" class="btn-icon" id="togglePassword" aria-label="Mostrar contraseña" title="Mostrar contraseña">
-                  <!-- eye icon -->
-                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z"/></svg>
-                </button>
-              </div>
-              <div class="form-error" id="error-password" aria-live="polite"></div>
-
-              <!-- password strength (visual, non-essential) -->
-              <div class="pw-meter" aria-hidden="true">
-                <div class="pw-bar" id="pwBar"></div>
-              </div>
-            </div>
-
-            <div class="form-row form-row--actions">
-              <label class="checkbox">
-                <input type="checkbox" id="remember" name="remember">
-                <span>Recordarme</span>
-              </label>
-              <a href="#" class="link small" id="forgot-link">¿Olvidaste la contraseña?</a>
-            </div>
-
-            <div class="form-row">
-              <button type="submit" class="btn primary full" id="loginBtn">Iniciar sesión</button>
-            </div>
-
-            <div id="login-help" class="muted small" aria-live="polite">Al iniciar sesión aceptas las políticas de uso de West Clean.</div>
-          </form>
-
-          <div class="wc-divider" aria-hidden="true"><span>o</span></div>
-
-          <div class="social-row">
-            <button class="btn ghost full" id="ssoBtn" aria-label="Iniciar sesión con SSO">Iniciar con SSO</button>
+            <div class="mt-2 small text-muted"></div>
           </div>
 
-          <footer class="wc-panel-footer muted small">¿Aún no tienes cuenta? Contacta con tu administrador.</footer>
+          <!-- Mobile chooser (visible < lg) -->
+          <div class="d-lg-none">
+            <h6 class="mb-3">¿Cómo deseas acceder?</h6>
+            <div class="d-flex gap-2 justify-content-center">
+              <button id="mobileSignIn" class="btn btn-wc-primary btn-sm">Iniciar sesión</button>
+              <button id="mobileRegister" class="btn btn-outline-wc btn-sm">Crear cuenta</button>
+              <button id="mobileGuest" class="btn btn-ghost-wc btn-sm">Invitado</button>
+            </div>
+          </div>
         </div>
+
+        <!-- TAB CONTENT (oculto hasta selección) -->
+        <div class="tab-content auth-locked" id="authTabsContent" tabindex="0" aria-hidden="true">
+          <!-- SIGN IN -->
+          <div class="tab-pane fade" id="signin" role="tabpanel">
+            <form id="loginForm" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control form-control-wc" id="loginEmail" name="email" required placeholder="tu@ejemplo.com">
+                <div class="invalid-feedback">Introduce un correo válido.</div>
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="loginPassword" class="form-label">Contraseña</label>
+                <input type="password" class="form-control form-control-wc pe-5" id="loginPassword" name="password" required placeholder="••••••••">
+                <button type="button" class="btn btn-sm btn-icon-pass" id="toggleLoginPass" aria-label="Mostrar contraseña"><i class="bi bi-eye"></i></button>
+                <div class="invalid-feedback">Introduce tu contraseña.</div>
+              </div>
+
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="rememberMe">
+                  <label class="form-check-label text-muted" for="rememberMe">Recordarme</label>
+                </div>
+                <a href="#" class="small link-wc ms-sm-2">¿Olvidaste la contraseña?</a>
+              </div>
+
+              <div class="d-grid mb-2">
+                <button type="submit" class="btn btn-wc-primary">Iniciar sesión</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- REGISTER -->
+          <div class="tab-pane fade" id="register" role="tabpanel">
+            <form id="registerForm" class="needs-validation" novalidate>
+              <div class="row g-2">
+                <h1 class="h3 fw-bold mb-2">Crear cuenta</h1>
+
+                <div class="col-12 col-md-6 mb-3">
+                  <label for="regName" class="form-label">Nombre</label>
+                  <input type="text" id="regName" class="form-control form-control-wc" required placeholder="Tu nombre">
+                  <div class="invalid-feedback">Escribe tu nombre.</div>
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                  <label for="regEmail" class="form-label">Correo electrónico</label>
+                  <input type="email" id="regEmail" class="form-control form-control-wc" required placeholder="tu@ejemplo.com">
+                  <div class="invalid-feedback">Introduce un correo válido.</div>
+                </div>
+
+                <div class="col-12 mb-3 position-relative">
+                  <label for="regPassword" class="form-label">Contraseña</label>
+                  <input type="password" id="regPassword" class="form-control form-control-wc pe-5" required placeholder="Mín. 8 caracteres">
+                  <button type="button" class="btn btn-sm btn-icon-pass" id="toggleRegPass" aria-label="Mostrar contraseña"><i class="bi bi-eye"></i></button>
+                </div>
+
+                <div class="col-12 mb-2 position-relative">
+                  <label for="regConfirm" class="form-label">Confirmar contraseña</label>
+                  <input type="password" id="regConfirm" class="form-control form-control-wc pe-5" required placeholder="Repite la contraseña">
+                  <button type="button" class="btn btn-sm btn-icon-pass" id="toggleRegConfirm" aria-label="Mostrar contraseña confirmación"><i class="bi bi-eye"></i></button>
+                </div>
+
+                <div class="col-12 mb-3">
+                  <div class="pw-meter" aria-hidden="true"><div id="regPwBar" class="pw-bar"></div></div>
+                  <ul class="pw-checklist small mt-2" id="pwChecklist" aria-live="polite">
+                    <li id="pwLen" class="text-muted">● Mínimo 8 caracteres</li>
+                    <li id="pwUpper" class="text-muted">● Al menos una letra mayúscula</li>
+                    <li id="pwNumber" class="text-muted">● Al menos un número</li>
+                    <li id="pwSpecial" class="text-muted">● Al menos un carácter especial (!@#...)</li>
+                    <li id="pwMatch" class="text-muted">● Las contraseñas coinciden</li>
+                  </ul>
+                </div>
+
+                <div class="col-12 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" id="terms" type="checkbox" required>
+                    <label class="form-check-label text-muted" for="terms">Acepto los <a href="#" class="link-wc">Términos y Condiciones</a></label>
+                    <div class="invalid-feedback">Debes aceptar los términos.</div>
+                  </div>
+                </div>
+
+                <div class="col-12 d-grid">
+                  <button class="btn btn-wc-primary" type="submit">Crear cuenta</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="mt-3 text-center text-muted small d-lg-none">West Clean — gestión de reportes</div>
       </section>
 
-    </section>
+    </div>
   </main>
 
+  <!-- Bootstrap bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Auth script -->
   <script src="../js/auth.js" defer></script>
+
+ 
+<script>
+(function () {
+  // función para crear el mismo overlay en index si detecta la marca
+  function createGuestOverlayOnIndex() {
+    if (document.querySelector('.wc-loading-overlay')) return null;
+    var overlay = document.createElement('div');
+    overlay.className = 'wc-loading-overlay';
+    overlay.innerHTML = '\
+      <div class="wc-loading-panel">\
+        <div class="wc-spinner" aria-hidden="true"></div>\
+        <div class="wc-loading-text">Cargando…</div>\
+        <div class="wc-progress" aria-hidden="true"><i></i></div>\
+      </div>';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.zIndex = '99999';
+    overlay.style.background = 'rgba(0,0,0,0.65)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.pointerEvents = 'auto';
+    document.body.appendChild(overlay);
+
+    var bar = overlay.querySelector('.wc-progress > i');
+    if (bar) {
+      bar.style.display = 'block';
+      bar.style.width = '0%';
+      bar.style.height = '4px';
+      bar.style.background = 'rgba(255,255,255,0.9)';
+      bar.style.borderRadius = '2px';
+      // progresión indefinida: avanzamos a 95% y esperaremos al load para completar
+      setTimeout(function () { bar.style.transition = 'width 1400ms linear'; bar.style.width = '95%'; }, 20);
+    }
+
+    return overlay;
+  }
+
+  // Si venimos del flujo de invitado, sessionStorage tendrá wc_guest_loading
+  var isGuestLoading = false;
+  try {
+    isGuestLoading = !!sessionStorage.getItem('wc_guest_loading');
+  } catch (e) { isGuestLoading = false; }
+
+  var overlayInstance = null;
+  if (isGuestLoading) {
+    // mostramos overlay inmediatamente (antes de que el DOM haga mucho)
+    overlayInstance = createGuestOverlayOnIndex();
+  }
+
+  // Cuando el sitio haya terminado de cargar por completo, removemos overlay y limpiamos flag
+  function clearGuestOverlay() {
+    try {
+      if (overlayInstance && overlayInstance.parentNode) {
+        // animar salida
+        overlayInstance.style.transition = 'opacity .26s ease';
+        overlayInstance.style.opacity = '0';
+        setTimeout(function () {
+          try { overlayInstance.remove(); } catch (e) {}
+        }, 260);
+      }
+    } catch (e) {}
+    try { sessionStorage.removeItem('wc_guest_loading'); } catch (e) {}
+  }
+
+  // Si el overlay se mostró, esperamos al evento load para quitarlo
+  if (isGuestLoading) {
+    if (document.readyState === 'complete') {
+      // ya cargó
+      clearGuestOverlay();
+    } else {
+      window.addEventListener('load', clearGuestOverlay, { once: true });
+      // también manejamos pageshow (volver desde bfcache)
+      window.addEventListener('pageshow', function (ev) {
+        // si fue restaurado desde bfcache, aseguramos borrar el overlay si existe
+        if (ev.persisted) {
+          clearGuestOverlay();
+        }
+      });
+    }
+  }
+})();
+
+
+
+</script>
+
+
 </body>
 </html>

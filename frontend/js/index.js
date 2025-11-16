@@ -1,133 +1,119 @@
-// index.js - interactions for forum page
+// index.js - Bootstrap-aware interactions for the forum page
 document.addEventListener('DOMContentLoaded', () => {
-  // Elements
+  // Bootstrap modal instance
+  const createModalEl = document.getElementById('createModal');
+  const createModal = createModalEl ? new bootstrap.Modal(createModalEl) : null;
+
   const createReportBtn = document.getElementById('createReportBtn');
   const quickCreateBtn = document.getElementById('quickCreateBtn');
-  const createModal = document.getElementById('createModal');
-  const closeModal = document.getElementById('closeModal');
-  const cancelCreate = document.getElementById('cancelCreate');
-  const createForm = document.getElementById('createForm');
+  const submitCreate = document.getElementById('submitCreate');
   const rPhoto = document.getElementById('r-photo');
   const photoPreview = document.getElementById('photoPreview');
+  const createForm = document.getElementById('createForm');
   const loadMoreBtn = document.getElementById('loadMoreBtn');
-  const userMenuWrap = document.getElementById('userMenuWrap');
-  const userPopup = document.getElementById('userPopup');
-  const profileBtn = document.getElementById('profileBtn');
-  const settingsBtn = document.getElementById('settingsBtn');
-  const searchInput = document.getElementById('searchInput');
+  const postsList = document.getElementById('postsList');
   const applyFilters = document.getElementById('applyFilters');
+  const searchInput = document.getElementById('searchInput');
 
-  // Open modal
-  const openModal = () => {
-    createModal.setAttribute('aria-hidden','false');
-    // trap focus: focus first input
-    const first = createForm.querySelector('input, textarea, select, button');
-    if (first) first.focus();
-  };
-  const close = () => {
-    createModal.setAttribute('aria-hidden','true');
-  };
-
-  [createReportBtn, quickCreateBtn].forEach(el => {
-    if (el) el.addEventListener('click', openModal);
-  });
-  if (closeModal) closeModal.addEventListener('click', close);
-  if (cancelCreate) cancelCreate.addEventListener('click', close);
-
-  // click outside modal closes it
-  if (createModal) {
-    createModal.addEventListener('click', (e) => {
-      if (e.target === createModal) close();
+  // Open modal handlers
+  [createReportBtn, quickCreateBtn].forEach(btn => {
+    if (btn) btn.addEventListener('click', () => {
+      createModal && createModal.show();
+      // focus first text control
+      setTimeout(() => {
+        const first = createForm.querySelector('input, textarea, select, button');
+        if (first) first.focus();
+      }, 200);
     });
-  }
+  });
 
-  // Photo preview
+  // photo preview
   if (rPhoto) {
     rPhoto.addEventListener('change', (e) => {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
       if (!file) { photoPreview.innerHTML = ''; photoPreview.setAttribute('aria-hidden','true'); return; }
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
+      img.className = 'img-fluid rounded';
       img.onload = () => URL.revokeObjectURL(img.src);
-      img.style.maxWidth = '100%';
       photoPreview.innerHTML = '';
       photoPreview.appendChild(img);
       photoPreview.setAttribute('aria-hidden','false');
     });
   }
 
-  // Create form submit (client demo)
-  if (createForm) {
-    createForm.addEventListener('submit', (e) => {
-      e.preventDefault();
+  // create form submit (demo: append card)
+  if (submitCreate) {
+    submitCreate.addEventListener('click', () => {
       const title = document.getElementById('r-title').value.trim();
       const desc = document.getElementById('r-desc').value.trim();
-      if(!title || !desc) return alert('Ingrese título y descripción');
-      // In a real app: upload via fetch + FormData
-      // For demo: append a new post to posts-col
-      const postsCol = document.querySelector('.posts-col');
-      const newPost = document.createElement('article');
-      newPost.className = 'post-card';
-      newPost.innerHTML = `
-        <div class="vote-col">
-          <button class="vote up">▲</button>
-          <div class="score">0</div>
-          <button class="vote down">▼</button>
-        </div>
-        <div class="post-main">
-          <header class="post-header">
-            <a class="post-tag">#${document.getElementById('r-tag').value}</a>
-            <h3 class="post-title"><a href="#">${escapeHtml(title)}</a></h3>
-            <div class="post-meta"><span class="muted">por <strong>tú</strong></span> · <span class="muted">ahora</span></div>
-          </header>
-          <div class="post-body"><p>${escapeHtml(desc)}</p></div>
-          <footer class="post-actions"><button class="btn ghost tiny">💬 0</button></footer>
-        </div>
-      `;
-      postsCol.prepend(newPost);
-      close();
+      if (!title || !desc) {
+        alert('Ingrese título y descripción');
+        return;
+      }
+      // Build new post card (simple)
+      const card = document.createElement('article');
+      card.className = 'card post-card overflow-hidden bg-wc-panel border-0';
+      card.innerHTML = `
+        <div class="row g-0 align-items-start">
+          <div class="col-auto d-none d-md-flex vote-col p-3 flex-column align-items-center">
+            <button class="btn btn-ghost-vote mb-1">▲</button>
+            <div class="score fw-semibold">0</div>
+            <button class="btn btn-ghost-vote mt-1">▼</button>
+          </div>
+          <div class="col">
+            <div class="card-body">
+              <a class="badge bg-wc-green text-dark mb-2" href="#">#${escapeHtml(document.getElementById('r-tag').value)}</a>
+              <h5 class="card-title mb-1"><a href="#" class="text-decoration-none text-light">${escapeHtml(title)}</a></h5>
+              <div class="text-muted small mb-2">por <strong class="text-light">tú</strong> · ahora</div>
+              <p class="card-text text-muted mb-2">${escapeHtml(desc)}</p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-wc btn-sm"><i class="bi bi-chat-left-text me-1"></i> 0</button>
+                <button class="btn btn-outline-wc btn-sm"><i class="bi bi-share-fill me-1"></i> Compartir</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      postsList.prepend(card);
+      // reset form
       createForm.reset();
       photoPreview.innerHTML = ''; photoPreview.setAttribute('aria-hidden','true');
+      createModal && createModal.hide();
     });
   }
 
-  // load more (demo)
-  if (loadMoreBtn) loadMoreBtn.addEventListener('click', () => {
-    // In real app: fetch next page. Here we just notify.
-    loadMoreBtn.textContent = 'Cargando...';
-    setTimeout(()=>{ loadMoreBtn.textContent = 'Cargar más'; alert('Simulación: carga de más reportes (implementa fetch en backend)'); }, 800);
-  });
-
-  // user popup toggle (profile/settings share same popup)
-  const toggleUserPopup = (btn) => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-    userPopup.setAttribute('aria-hidden', String(expanded));
-  };
-  if (profileBtn) profileBtn.addEventListener('click', (e)=> { e.stopPropagation(); toggleUserPopup(profileBtn); });
-  if (settingsBtn) settingsBtn.addEventListener('click', (e)=> { e.stopPropagation(); toggleUserPopup(settingsBtn); });
-
-  // close popup on outside click
-  document.addEventListener('click', ()=> {
-    if (userPopup) { userPopup.setAttribute('aria-hidden','true'); profileBtn && profileBtn.setAttribute('aria-expanded','false'); settingsBtn && settingsBtn.setAttribute('aria-expanded','false'); }
-  });
-
-  // simple search/filter demo - just highlight matches client-side
-  if (applyFilters) applyFilters.addEventListener('click', () => {
-    const q = (searchInput.value||'').toLowerCase().trim();
-    const type = document.getElementById('filterType').value;
-    const posts = document.querySelectorAll('.post-card');
-    posts.forEach(p => {
-      const title = (p.querySelector('.post-title')?.innerText||'').toLowerCase();
-      const tag = (p.querySelector('.post-tag')?.innerText||'').toLowerCase();
-      const matchesQ = !q || title.includes(q) || tag.includes(q);
-      const matchesType = type === 'all' || tag.includes(type);
-      p.style.display = (matchesQ && matchesType) ? '' : 'none';
+  // load more demo
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', () => {
+      loadMoreBtn.disabled = true;
+      loadMoreBtn.textContent = 'Cargando...';
+      setTimeout(() => {
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.textContent = 'Cargar más';
+        // In real app: fetch next page and append nodes
+        alert('Simulación: carga de más reportes (implementa fetch en backend)');
+      }, 800);
     });
-  });
+  }
 
-  // small helper to avoid XSS-like injection in demo
-  function escapeHtml(text) {
+  // basic filters (client-side demo)
+  if (applyFilters) {
+    applyFilters.addEventListener('click', () => {
+      const q = (searchInput.value || '').toLowerCase();
+      const type = (document.getElementById('filterType') && document.getElementById('filterType').value) || 'all';
+      const posts = postsList.querySelectorAll('.post-card');
+      posts.forEach(p => {
+        const title = (p.querySelector('.card-title')?.innerText || '').toLowerCase();
+        const tag = (p.querySelector('.badge')?.innerText || '').toLowerCase();
+        const matchQ = !q || title.includes(q) || tag.includes(q);
+        const matchType = type === 'all' || tag.includes(type);
+        p.style.display = (matchQ && matchType) ? '' : 'none';
+      });
+    });
+  }
+
+  // helper
+  function escapeHtml(text){
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
