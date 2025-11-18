@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 // ---------- overlay invitado (mejorado: persiste hasta que index.html termine de cargar) ----------
-// ---------- overlay invitado (mejorado) ----------
+
 // usage: showGuestOverlayAndGo(ms, allowBack)
 // ms = tiempo visual de la barra (ej. 3000)
 // allowBack = true -> navegación con history (se podrá volver atrás)
@@ -307,101 +307,6 @@ function showGuestOverlayAndGo(ms, allowBack) {
     return ann;
   }
 
-  // ---------- simuladores (placeholder) ----------
-  function simulateServerSignIn(form) {
-    var submit = form ? form.querySelector('button[type="submit"]') : null;
-    if (submit) {
-      submit.disabled = true;
-      var prev = submit.innerHTML;
-      submit.innerHTML = 'Entrando…';
-      window.setTimeout(function () {
-        submit.disabled = false;
-        submit.innerHTML = prev;
-        window.location.href = 'index.html';
-      }, 1100);
-    } else {
-      window.setTimeout(function () { window.location.href = 'index.html'; }, 1100);
-    }
-  }
-
-  function simulateServerRegister(form) {
-    var submit = form ? form.querySelector('button[type="submit"]') : null;
-    if (submit) {
-      submit.disabled = true;
-      var prev = submit.innerHTML;
-      submit.innerHTML = 'Registrando…';
-      window.setTimeout(function () {
-        submit.disabled = false;
-        submit.innerHTML = prev;
-        window.alert('Registro completado (simulado). Ahora puedes iniciar sesión.');
-        showAuthPane('signin-tab');
-      }, 1200);
-    } else {
-      window.setTimeout(function () {
-        window.alert('Registro completado (simulado).');
-        showAuthPane('signin-tab');
-      }, 1200);
-    }
-  }
-
-  // ---------- handlers submit ----------
-  if (signinForm) {
-    signinForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      clearFormErrors(signinForm);
-      var email = signinForm.querySelector('input[name="email"]');
-      var pass = signinForm.querySelector('input[name="password"]');
-      var ok = true;
-      if (!email || !isValidEmail(email.value)) {
-        showFieldError(email, 'Introduce un correo válido.');
-        ok = false;
-      }
-      if (!pass || pass.value.trim().length < 6) {
-        showFieldError(pass, 'La contraseña debe tener al menos 6 caracteres.');
-        ok = false;
-      }
-      if (!ok) {
-        var ann = document.getElementById('authAnnounce') || createAnnouncer();
-        if (ann) ann.textContent = 'Hay errores en el formulario. Revisa los campos marcados.';
-        return;
-      }
-      simulateServerSignIn(signinForm);
-    });
-  }
-
-  if (registerForm) {
-    registerForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      clearFormErrors(registerForm);
-      var name = registerForm.querySelector('input[name="name"]');
-      var email = registerForm.querySelector('input[name="email"]');
-      var pass = registerForm.querySelector('input[name="password"]');
-      var pass2 = registerForm.querySelector('input[name="password_confirm"], input[name="confirm_password"]');
-      var ok = true;
-      if (!name || name.value.trim().length < 2) {
-        showFieldError(name, 'Introduce tu nombre completo.');
-        ok = false;
-      }
-      if (!email || !isValidEmail(email.value)) {
-        showFieldError(email, 'Introduce un correo válido.');
-        ok = false;
-      }
-      if (!pass || pass.value.length < 6) {
-        showFieldError(pass, 'La contraseña debe tener al menos 6 caracteres.');
-        ok = false;
-      }
-      if (pass && pass2 && pass.value !== pass2.value) {
-        showFieldError(pass2, 'Las contraseñas no coinciden.');
-        ok = false;
-      }
-      if (!ok) {
-        var ann2 = document.getElementById('authAnnounce') || createAnnouncer();
-        if (ann2) ann2.textContent = 'Hay errores en el formulario de registro. Corrígelos para continuar.';
-        return;
-      }
-      simulateServerRegister(registerForm);
-    });
-  }
 
   // ---------- MutationObserver para animar al cambiar tabs ----------
   if (tabsContent && window.MutationObserver) {

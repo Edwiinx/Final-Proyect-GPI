@@ -1,3 +1,6 @@
+
+
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -11,6 +14,8 @@
 
   <link rel="stylesheet" href="../css/styles.css"> <!-- opcional -->
   <link rel="stylesheet" href="../css/login.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
   <meta name="theme-color" content="#0b0b0b">
 </head>
@@ -179,9 +184,214 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Auth script -->
   <script src="../js/auth.js" defer></script>
+    <!-- alertas sweet alert -->
+
+<script>
+function wcAlert(title, text = "", icon = "info") {
+  return Swal.fire({
+    title,
+    text,
+    icon,
+    confirmButtonText: "Entendido",
+    confirmButtonColor: "#00b894",
+    background: "#0b0b0b",
+    color: "white",
+  });
+}
+</script>
+
+
+ <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  if (!loginForm) return;
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPassword').value;
+
+    if (!email || !pass) {
+      wcAlert("Campos vacíos", "Introduce correo y contraseña", "warning");
+      return;
+    }
+
+    const form = new FormData();
+    form.append('email', email);
+    form.append('password', pass);
+
+    try {
+      const url = '/Final-Proyect-GPI/backend/php/logica.php?action=login';
+      const res = await fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        body: form
+      });
+
+      const raw = await res.text();
+      let data = null;
+
+      try {
+        data = JSON.parse(raw);
+      } catch (err) {
+        console.error('Respuesta no JSON:', raw);
+        wcAlert("Error", "El servidor devolvió una respuesta inválida.", "error");
+        return;
+      }
+
+      if (!res.ok) {
+        console.error('HTTP', res.status, data);
+        wcAlert("Error", data.error || "Server error", "error");
+        return;
+      }
+
+      if (data.ok) {
+        wcAlert("Bienvenido", "Inicio de sesión exitoso", "success")
+          .then(() => window.location.href = '/Final-Proyect-GPI/frontend/pages/index.html');
+      } else {
+        wcAlert("Credenciales incorrectas", data.error || "Intenta nuevamente", "error");
+      }
+
+    } catch (err) {
+      console.error('Fetch error:', err);
+      wcAlert("Error", "No se pudo conectar con el servidor", "error");
+    }
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const regForm = document.getElementById('registerForm');
+  if (!regForm) return;
+
+  const regName = document.getElementById('regName');
+  const regEmail = document.getElementById('regEmail');
+  const regPassword = document.getElementById('regPassword');
+  const regConfirm = document.getElementById('regConfirm');
+  const regPwBar = document.getElementById('regPwBar');
+  const terms = document.getElementById('terms');
+  const submitBtn = regForm.querySelector('button[type="submit"]');
+
+  function scorePassword(pw) {
+    let s = 0;
+    if (!pw) return 0;
+    if (pw.length >= 8) s++;
+    if (/[A-ZÁÉÍÓÚÑ]/.test(pw)) s++;
+    if (/[0-9]/.test(pw)) s++;
+    if (/[^A-Za-z0-9\s]/.test(pw)) s++;
+    return s;
+  }
+
+  function updatePwChecklist() {
+    const pw = regPassword.value;
+    const conf = regConfirm.value;
+    const s = scorePassword(pw);
+    const pct = (s / 4) * 100;
+    regPwBar.style.width = pct + '%';
+
+    document.getElementById('pwLen').classList.toggle('text-success', pw.length >= 8);
+    document.getElementById('pwUpper').classList.toggle('text-success', /[A-Z]/.test(pw));
+    document.getElementById('pwNumber').classList.toggle('text-success', /[0-9]/.test(pw));
+    document.getElementById('pwSpecial').classList.toggle('text-success', /[^A-Za-z0-9]/.test(pw));
+    document.getElementById('pwMatch').classList.toggle('text-success', pw === conf && pw !== "");
+
+    const okCount = document.querySelectorAll('.pw-checklist li.text-success').length;
+    submitBtn.disabled = !(okCount === 5 && regName.value.trim() && regEmail.value.trim() && terms.checked);
+  }
+
+  [regName, regEmail, regPassword, regConfirm, terms].forEach(el => {
+    el.addEventListener('input', updatePwChecklist);
+  });
+
+  async function readResponseJSON(res) {
+    const txt = await res.text();
+    try { return JSON.parse(txt); }
+    catch { return { __invalidJSON: true, raw: txt }; }
+  }
+
+  regForm.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+
+    const fd = new FormData();
+    fd.append('name', regName.value.trim());
+    fd.append('email', regEmail.value.trim());
+    fd.append('password', regPassword.value);
+
+    submitBtn.disabled = true;
+
+    const res = await fetch('/Final-Proyect-GPI/backend/php/logica.php?action=register', {
+      method: 'POST',
+      credentials: 'include',
+      body: fd
+    });
+
+    const data = await readResponseJSON(res);
+
+    submitBtn.disabled = false;
+
+    if (data.__invalidJSON) {
+      wcAlert("Error", "Respuesta no válida del servidor", "error");
+      return;
+    }
+
+    if (!res.ok) {
+      wcAlert("Error al registrar", data.error || "Error desconocido", "error");
+      return;
+    }
+
+  if (data.ok) {
+
+  Swal.fire({
+    title: "Cuenta creada",
+    text: "Estamos preparando todo...",
+    icon: "success",
+    showConfirmButton: false,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    allowEnterKey: false,
+    timer: 2000,
+    backdrop: `rgba(0,0,0,0.45) blur(6px)`
+  }).then(() => {
+
+    // Segunda pantalla de carga con difuminado
+    Swal.fire({
+      title: "Redirigiendo...",
+      html: '<div class="spinner-border text-light" role="status"></div>',
+      background: "rgba(0,0,0,0.85)",
+      color: "#fff",
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      backdrop: `rgba(0,0,0,0.55) blur(8px)`,
+      didOpen: () => {
+        Swal.showLoading();
+
+        setTimeout(() => {
+          window.location.href = "/Final-Proyect-GPI/frontend/pages/index.html";
+        }, 4000); // 4 segundos
+      }
+    });
+
+  });
+
+}
+
+ else {
+      wcAlert("Error", data.error || "No se pudo registrar", "error");
+    }
+  });
+});
+</script>
+
+
 
  
 <script>
+
 (function () {
   // función para crear el mismo overlay en index si detecta la marca
   function createGuestOverlayOnIndex() {

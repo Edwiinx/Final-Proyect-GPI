@@ -4,167 +4,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>West Clean — Foro de reportes</title>
+  <!-- HEAD: colocar lo siguiente lo más arriba posible -->
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('wc_theme_mode');
+      if (!t) {
+        // usa preferencia del sistema por defecto si no hay guardado
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) t = 'light';
+        else t = 'dark';
+      }
+      if (t === 'light') document.documentElement.classList.add('theme-light');
+      else document.documentElement.classList.remove('theme-light');
+    } catch(e){}
+  })();
+</script>
 
-  <!-- Tipografía -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 
-  <!-- Bootstrap CSS (CDN) -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- Global tokens (si existe) -->
+  <!-- Tu CSS -->
   <link rel="stylesheet" href="../css/styles.css">
-
-  <!-- Page-specific overrides -->
   <link rel="stylesheet" href="../css/index.css">
+  <!-- incluir SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <meta name="theme-color" content="#0b0b0b">
 </head>
+<body>
 
-<body class="bg-wc-dark text-light">
-
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-wc-surface sticky-top shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html" aria-label="West Clean home">
-        <span class="wc-logo-square d-inline-block me-1" aria-hidden="true">
-          <!-- lightweight inline svg -->
-          <svg width="34" height="34" viewBox="0 0 24 24" role="img" aria-hidden="true">
-            <rect width="24" height="24" rx="5" fill="#0b0b0b"></rect>
-            <path d="M6 12c1.6-2 3-4 6-4s4.4 2 6 4c-1.6 2-3 4-6 4s-4.4-2-6-4z" fill="#00b894"/>
-          </svg>
-        </span>
-        <span class="brand-text">West Clean</span>
-      </a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wcNavbar" aria-controls="wcNavbar" aria-expanded="false" aria-label="Alternar navegación">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="wcNavbar">
-        <ul class="navbar-nav ms-auto align-items-center">
-          <li class="nav-item me-2">
-            <button id="createReportBtn" class="btn btn-wc-primary btn-sm">Crear reporte</button>
-          </li>
-
-          <li class="nav-item dropdown me-2">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle fs-4 me-1"></i>
-              <span class="d-none d-lg-inline">Mi cuenta</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="profile.html">Ver perfil</a></li>
-              <li><a class="dropdown-item" href="settings.html">Configuración</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><button class="dropdown-item" id="logoutBtn">Cerrar sesión</button></li>
-            </ul>
-          </li>
-
-        </ul>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-wc-surface sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="">West Clean</a>
+      <div class="ms-auto d-flex gap-2 align-items-center">
+        <i class="bi bi-gear-fill"></i>
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">Mi cuenta</a>
+          <span id="userName">Usuario</span>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="profile.html">Ver perfil</a></li>
+            <li><button class="dropdown-item" id="logoutBtn">Cerrar sesión</button></li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
 
-  <!-- FILTER BAR -->
+  <!-- FILTER / ACTIONS -->
   <div class="container py-3">
     <div class="row g-2 align-items-center">
       <div class="col-12 col-lg-6">
         <div class="input-group">
           <span class="input-group-text bg-wc-surface border-0"><i class="bi bi-search"></i></span>
-          <input id="searchInput" class="form-control form-control-wc bg-transparent border-0 text-light" type="search" placeholder="Buscar reportes, direcciones, etiquetas..." aria-label="Buscar reportes">
+          <input id="searchInput" class="form-control form-control-wc" type="search" placeholder="Buscar..." aria-label="Buscar">
         </div>
       </div>
-
-      <div class="col-12 col-lg-6">
-        <div class="d-flex gap-2 justify-content-lg-end">
-          <select id="filterType" class="form-select form-select-wc w-auto" aria-label="Filtrar por">
-            <option value="all">Todos</option>
-            <option value="sanitation">Saneamiento</option>
-            <option value="garbage">Desechos</option>
-            <option value="maintenance">Mantenimiento</option>
-          </select>
-
-          <select id="sortBy" class="form-select form-select-wc w-auto" aria-label="Ordenar por">
-            <option value="new">Más recientes</option>
-            <option value="top">Más votados</option>
-            <option value="commented">Más comentados</option>
-          </select>
-
-          <button id="applyFilters" class="btn btn-outline-wc">Aplicar</button>
-        </div>
+      <div class="col-12 col-lg-6 text-lg-end">
+        <button id="quickCreateBtn" class="btn btn-wc-primary">Crear reporte</button>
       </div>
     </div>
   </div>
 
-  <!-- MAIN LAYOUT -->
   <main class="container mb-5">
-    <div class="row g-4">
+    <div class="row">
       <!-- POSTS -->
       <section class="col-12 col-lg-8">
-        <div id="postsList" class="d-grid gap-3">
-
-          <!-- POST CARD (template) -->
-          <article class="card post-card overflow-hidden bg-wc-panel border-0">
-            <div class="row g-0 align-items-start">
-              <!-- votes -->
-              <div class="col-auto d-none d-md-flex vote-col p-3 flex-column align-items-center">
-                <button class="btn btn-ghost-vote mb-1" aria-label="Votar positivo">▲</button>
-                <div class="score fw-semibold">128</div>
-                <button class="btn btn-ghost-vote mt-1" aria-label="Votar negativo">▼</button>
-              </div>
-
-              <!-- content -->
-              <div class="col">
-                <div class="card-body">
-                  <a class="badge bg-wc-green text-dark mb-2" href="#">#garbage</a>
-                  <h5 class="card-title mb-1"><a href="post.html" class="text-decoration-none text-light">Basura acumulada en la calle 7, sector A</a></h5>
-                  <div class="text-muted small mb-2">por <strong class="text-light">juanp</strong> · hace 2h · 12 comentarios</div>
-
-                  <p class="card-text text-muted mb-2">Se observa acumulación de bolsas y escombros en la esquina frente al colegio. El flujo peatonal está afectado.</p>
-
-                  <div class="post-media mb-2">
-                    <img src="../assets/images/sample-report-1.jpg" alt="Acumulación de basura en esquina" class="img-fluid rounded">
-                  </div>
-
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-outline-wc btn-sm"><i class="bi bi-chat-left-text me-1"></i> 12</button>
-                    <button class="btn btn-outline-wc btn-sm"><i class="bi bi-share-fill me-1"></i> Compartir</button>
-                    <button class="btn btn-outline-wc btn-sm"><i class="bi bi-bookmark me-1"></i> Guardar</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-          <!-- /POST CARD -->
-
-          <!-- Repeat sample post -->
-          <article class="card post-card overflow-hidden bg-wc-panel border-0">
-            <div class="row g-0 align-items-start">
-              <div class="col-auto d-none d-md-flex vote-col p-3 flex-column align-items-center">
-                <button class="btn btn-ghost-vote mb-1">▲</button>
-                <div class="score fw-semibold">64</div>
-                <button class="btn btn-ghost-vote mt-1">▼</button>
-              </div>
-              <div class="col">
-                <div class="card-body">
-                  <a class="badge bg-wc-green text-dark mb-2" href="#">#saneamiento</a>
-                  <h5 class="card-title mb-1"><a href="post.html" class="text-decoration-none text-light">Alcantarilla obstruida en avenida principal</a></h5>
-                  <div class="text-muted small mb-2">por <strong class="text-light">maria</strong> · hace 1d · 4 comentarios</div>
-                  <p class="card-text text-muted mb-2">El agua no drena tras lluvias; es urgente revisar tapa y canal.</p>
-                  <div class="d-flex gap-2">
-                    <button class="btn btn-outline-wc btn-sm">💬 4</button>
-                    <button class="btn btn-outline-wc btn-sm">🔗</button>
-                    <button class="btn btn-outline-wc btn-sm">☆</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-
-        </div>
-
+        <div id="postsList" class="d-grid gap-3" aria-live="polite"></div>
         <div class="text-center mt-4">
           <button id="loadMoreBtn" class="btn btn-outline-wc">Cargar más</button>
         </div>
@@ -172,86 +79,187 @@
 
       <!-- SIDEBAR -->
       <aside class="col-12 col-lg-4">
-        <div class="card bg-wc-panel border-0 mb-3 p-3">
-          <h6 class="mb-3">Acciones</h6>
-          <div class="d-grid gap-2">
-            <button id="quickCreateBtn" class="btn btn-wc-primary">Crear reporte</button>
-            <a class="btn btn-outline-wc" href="profile.html">Mi perfil</a>
+        <div class="card bg-wc-panel p-3 mb-3">
+          <h6>Etiquetas</h6>
+          <div id="tagsWrap" class="d-flex flex-wrap gap-2">
+            <button class="btn btn-tag" data-tag="garbage">#garbage</button>
+            <button class="btn btn-tag" data-tag="saneamiento">#saneamiento</button>
+            <button class="btn btn-tag" data-tag="mantenimiento">#mantenimiento</button>
           </div>
-        </div>
-
-        <div class="card bg-wc-panel border-0 mb-3 p-3">
-          <h6 class="mb-2">Etiquetas populares</h6>
-          <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-tag">#garbage</button>
-            <button class="btn btn-tag">#saneamiento</button>
-            <button class="btn btn-tag">#mantenimiento</button>
-            <button class="btn btn-tag">#iluminacion</button>
-          </div>
-        </div>
-
-        <div class="card bg-wc-panel border-0 p-3">
-          <h6 class="mb-2">Top usuarios</h6>
-          <ol class="ps-3 mb-0 text-muted small">
-            <li class="mb-1 text-light">juanp — 120 pts</li>
-            <li class="mb-1 text-light">maria — 98 pts</li>
-            <li class="mb-1 text-light">operaciones — 80 pts</li>
-          </ol>
         </div>
       </aside>
     </div>
   </main>
 
-  <!-- CREATE REPORT MODAL (Bootstrap) -->
-  <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+  <!-- CREATE REPORT MODAL -->
+  <div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content bg-wc-panel border-0">
-        <div class="modal-header border-0">
-          <h5 class="modal-title" id="modalTitle">Crear nuevo reporte</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      <div class="modal-content bg-wc-panel">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear reporte</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
-          <form id="createForm" class="row g-3" novalidate>
-            <div class="col-12">
-              <label for="r-title" class="form-label text-muted">Título</label>
-              <input id="r-title" name="title" class="form-control form-control-wc bg-transparent border-0 text-light" required>
+          <form id="createForm" novalidate>
+            <div class="mb-3">
+              <label for="r-title" class="form-label">Título</label>
+              <input id="r-title" name="title" class="form-control form-control-wc" required>
             </div>
-
-            <div class="col-12">
-              <label for="r-desc" class="form-label text-muted">Descripción</label>
-              <textarea id="r-desc" name="description" class="form-control form-control-wc bg-transparent border-0 text-light" rows="4" required></textarea>
+            <div class="mb-3">
+              <label for="r-desc" class="form-label">Descripción</label>
+              <textarea id="r-desc" name="description" class="form-control form-control-wc" rows="4" required></textarea>
             </div>
-
-            <div class="col-md-6">
-              <label for="r-tag" class="form-label text-muted">Etiqueta</label>
-              <select id="r-tag" class="form-select form-select-wc">
-                <option value="garbage">#garbage</option>
-                <option value="saneamiento">#saneamiento</option>
-                <option value="mantenimiento">#mantenimiento</option>
-              </select>
+            <div class="mb-3 row g-2">
+              <div class="col-6">
+                <label for="r-tag" class="form-label">Etiqueta</label>
+                <select id="r-tag" name="tag" class="form-select form-control-wc">
+                  <option value="garbage">#garbage</option>
+                  <option value="saneamiento">#saneamiento</option>
+                  <option value="mantenimiento">#mantenimiento</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="r-photo" class="form-label">Foto (opcional)</label>
+                <input id="r-photo" name="photo" type="file" accept="image/*" class="form-control form-control-wc">
+                <div id="photoPreview" class="mt-2" aria-hidden="true"></div>
+              </div>
             </div>
-
-            <div class="col-md-6">
-              <label for="r-photo" class="form-label text-muted">Foto (opcional)</label>
-              <input id="r-photo" name="photo" type="file" accept="image/*" class="form-control form-control-wc bg-transparent border-0 text-light">
-              <div id="photoPreview" class="mt-2" aria-hidden="true"></div>
-            </div>
-
           </form>
         </div>
-
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-outline-wc" data-bs-dismiss="modal">Cancelar</button>
-          <button id="submitCreate" type="button" class="btn btn-wc-primary">Publicar</button>
+        <div class="modal-footer">
+          <button data-bs-dismiss="modal" class="btn btn-outline-wc">Cancelar</button>
+          <button id="submitCreate" class="btn btn-wc-primary">Publicar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS (bundle incl. Popper) -->
+  <template id="postTemplate">
+    <article class="card post-card bg-wc-panel border-0">
+      <div class="row g-0 align-items-start">
+        <div class="col-auto d-none d-md-flex vote-col p-3 flex-column align-items-center">
+          <button class="btn btn-ghost-vote btn-vote-up" aria-label="Votar positivo" data-action="vote-up">▲</button>
+          <div class="score fw-semibold">0</div>
+          <button class="btn btn-ghost-vote btn-vote-down" aria-label="Votar negativo" data-action="vote-down">▼</button>
+        </div>
+        <div class="col">
+          <div class="card-body">
+            <a class="badge bg-wc-green tag" href="#"></a>
+            <h5 class="card-title mb-1"><a class="post-link text-decoration-none" href="#"></a></h5>
+            <div class="text-muted small meta"></div>
+            <p class="card-text text-muted excerpt mb-2"></p>
+            <div class="post-media mb-2" style="display:none"><img class="img-fluid rounded" alt=""></div>
+            <div class="d-flex gap-2 actions">
+              <button class="btn btn-outline-wc btn-sm btn-comment" data-action="comment"><i class="bi bi-chat-left-text me-1"></i>0</button>
+              <button class="btn btn-outline-wc btn-sm btn-share" data-action="share"><i class="bi bi-share-fill me-1"></i>Compartir</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </template>
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Page script -->
+  <!-- App script -->
   <script src="../js/index.js" defer></script>
+
+
+
+<script>
+async function fetchMe() {
+  try {
+    const res = await fetch('/Final-Proyect-GPI/backend/php/session.php?action=me', {
+      method: 'GET',
+      credentials: 'include'
+    });
+    // leer como JSON si posible
+    const txt = await res.text();
+    try {
+      const data = JSON.parse(txt);
+      return { res, data };
+    } catch (err) {
+      console.error('Respuesta no JSON de me:', txt);
+      return { res, data: null };
+    }
+  } catch (err) {
+    console.error('Error fetch me:', err);
+    return { res: null, data: null, err };
+  }
+}
+
+// Llamar al cargar la página
+window.addEventListener('DOMContentLoaded', async () => {
+  const { res, data } = await fetchMe();
+  if (!res || !data) {
+    // No se pudo comprobar, opcionalmente avisar en consola
+    console.warn('No se pudo verificar sesión (me).');
+    return;
+  }
+
+  if (!res.ok || !data.ok) {
+    // No hay sesión activa -> redirigir al login opcionalmente
+    console.log('No session active.');
+    // Si deseas forzar login:
+    // window.location.href = '/Final-Proyect-GPI/frontend/pages/login.html';
+    return;
+  }
+
+  // Hay sesión -> colocar nombre en UI (coloca un span con id="userName" donde quieras mostrarlo)
+  const nameEl = document.getElementById('userName');
+  if (nameEl) nameEl.textContent = data.nombre || data.correo || 'Usuario';
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (!logoutBtn) return;
+
+  logoutBtn.addEventListener('click', async (ev) => {
+    ev.preventDefault();
+
+    const result = await Swal.fire({
+      title: 'Cerrar sesión',
+      text: '¿Estás seguro que quieres cerrar tu sesión?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      backdrop: `rgba(0,0,0,0.45) blur(4px)`,
+      customClass: { popup: 'swal2-rounded' }
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await fetch('/Final-Proyect-GPI/backend/php/session.php?action=logout', {
+        method: 'POST', // puede ser GET también, usamos POST por convención
+        credentials: 'include'
+      });
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        await Swal.fire({
+          title: 'Sesión cerrada',
+          text: 'Has salido correctamente',
+          icon: 'success',
+          timer: 1300,
+          showConfirmButton: false,
+          backdrop: `rgba(0,0,0,0.45) blur(4px)`
+        });
+        // redirigir a login o a la homepage pública
+        window.location.href = '/Final-Proyect-GPI/frontend/pages/login.html';
+      } else {
+        Swal.fire('Error', data.error || 'No se pudo cerrar sesión', 'error');
+      }
+    } catch (err) {
+      console.error('Logout error', err);
+      Swal.fire('Error', 'No se pudo conectar con el servidor', 'error');
+    }
+  });
+});
+</script>
+
+
 </body>
 </html>
